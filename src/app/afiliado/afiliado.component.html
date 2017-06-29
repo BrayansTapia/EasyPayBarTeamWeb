@@ -30,7 +30,7 @@
           <tr *ngFor="let afl of afiliados | async | paginate: { itemsPerPage: 10, currentPage: p }">
             <td>{{ afl.nombre }}</td>
             <td>{{ afl.fechaAfiliacion }}</td>
-            <td>{{ afl.saldo | number : '1.2-2' }}</td>
+            <td>${{ afl.saldo | number : '1.2-2' }}</td>
             <td style="width: 10%;">
               <button class="btn btn-primary" (click)="openModalAfiliado(afl.$key, afl.nombre, afl.saldo)" > <i class="fa fa-plus" aria-hidden="true"></i> </button>
             </td>

@@ -14,7 +14,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class CategoriaComponent implements OnInit, OnDestroy {
 
   // Variables de la interfaz
-  titulo = 'Registro de categorias del proveedor';
+  titulo = 'Registro de categorías del proveedor';
 
   @ViewChild('modalCategoriaEliminar')
   modalEliminar: ModalComponent;
