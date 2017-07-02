@@ -48,6 +48,12 @@ export class ComprasComponent implements OnInit {
   @ViewChild('modalClienteQR')
   modalClienteQR: ModalComponent;
 
+  @ViewChild('modalConfirmarCompra')
+  modalConfirmarCompra: ModalComponent;
+
+  @ViewChild('modalCancelarCompra')
+  modalCancelarCompra: ModalComponent;
+
   producto: Producto = new Producto();
   productos: FirebaseListObservable<Producto[]>;
   categorias: FirebaseListObservable<Categoria[]>;
@@ -61,6 +67,8 @@ export class ComprasComponent implements OnInit {
   private idPro;
   private sub: any;
   private listaProductosDetalle = [];
+  private datosProductos: string;
+  private datosCargados: boolean;
 
   // atributos de la tabla
   public rows: Array<any> = [];
@@ -89,6 +97,13 @@ export class ComprasComponent implements OnInit {
     private categoriaServicio: CategoriaService, private afiliadoService: AfiliadoService,
     private compraServicio: CompraService, private db: AngularFireDatabase, private router: Router) { 
     this.length = this.data.length;
+    this.datosCargados = true;
+
+    this.categorias = this.categoriaServicio.getCategorias(this.idPro);
+
+    this.categorias.subscribe(data => {
+        this.datosCargados = false;
+    });
   }
 
   ngOnInit() {
@@ -289,6 +304,10 @@ export class ComprasComponent implements OnInit {
     }
   }
 
+  abirConfirmarCompra() {
+    this.modalConfirmarCompra.open();
+  }
+
   public changePage(page: any, data: Array<any> = this.data): Array<any> {
     let start = (page.page - 1) * page.itemsPerPage;
     let end = page.itemsPerPage > -1
@@ -394,7 +413,11 @@ export class ComprasComponent implements OnInit {
     if (!row) {
       return ''
     }
-    return row[column.nombre];
+    if (column.nombre == 'precio') {
+      return '$' + row[column.nombre];
+    } else {
+      return row[column.nombre];
+    } 
   }
 
   public sortByColumn(columnToSort: Column) {

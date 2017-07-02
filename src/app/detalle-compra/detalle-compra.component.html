@@ -2,9 +2,17 @@
 
 <div class="component-container">
   <div class="page-head">
-    <i class="fa fa-chevron-left fa-3x" id="return" aria-hidden="true" [routerLink]="['/menu-proveedor']"></i>
-    <h1 class="page-title">Detalle de la compra del cliente: {{ afiliado.nombre }}</h1>
+    <div class="row">
+      <div class="col-sm-11">
+         <i class="fa fa-chevron-left fa-3x" id="return" aria-hidden="true" [routerLink]="['/proveedor', idProveedor, 'compras']"></i>
+         <h1 class="page-title">Detalle de la compra del cliente: {{ afiliado.nombre }}</h1>
+      </div>
+      <div class="col-sm-1">
+        <button md-fab class="mat-fab" [routerLink]="['/proveedor', idProveedor, 'compras']"><i class="fa fa-plus" aria-hidden="true"></i></button>
+      </div>
+    </div>
   </div>
+
   <div class="page-main">
     <div class="page-section">
     	<div class="panel panel-primary">
@@ -53,6 +61,4 @@
 
     </div>
   </div>
-
-  <span class="app-action-md-fab"><button md-fab class="mat-fab" [routerLink]="['/proveedor', idProveedor, 'compras']"><i class="fa fa-plus" aria-hidden="true"></i></button></span>
 </div>

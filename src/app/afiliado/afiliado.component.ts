@@ -31,7 +31,7 @@ export class AfiliadoComponent implements OnInit {
   @ViewChild('modalVerificarAfiliado')
   modalVerificarAfiliado: ModalComponent;
 
-  titulo = 'Afiliados';
+  titulo = 'Registro de afiliados';
   afiliados: FirebaseListObservable<Afiliado[]>;
   afiliado: Afiliado = new Afiliado();
   nuevoAfiliado: Afiliado = new Afiliado();

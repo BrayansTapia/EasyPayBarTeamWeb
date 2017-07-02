@@ -4,36 +4,26 @@
   <div class="page-head">
     <div class="row">
       <div class="col-sm-11">
-        <i class="fa fa-chevron-left fa-3x" id="return" aria-hidden="true" [routerLink]="['/menu-proveedor']"></i>
+        <i class="fa fa-chevron-left fa-3x" id="return" aria-hidden="true" (click)="modalCancelarCompra.open()"></i>
         <h1 class="page-title">Registro de compra</h1>
       </div>
       <div class="col-sm-1">
-        <button md-fab class="mat-fab" (click)="realizarCompra()"><i class="fa fa-shopping-cart" aria-hidden="true"></i></button>
+        <button md-fab class="mat-fab" (click)="abirConfirmarCompra()"><i class="fa fa-shopping-cart" aria-hidden="true"></i></button>
       </div>
     </div>
     
   </div>
   <div class="page-main">
     <div class="page-section">
+
       <div class="panel panel-primary">
         <div class="panel-heading">
           <h3 class="panel-title"><b></b></h3>
         </div>
         <div class="color-panel-body panel-body">
           <div class="row">
-            <div class="col-sm-5">
-              <label class="col-lg-4 control-label"><h4><b><span style="color:#fff;">Producto:</span></b></h4></label>
-              <div class="input-group search-bar" style="width: 40%; margin-left: 20px;">
-                <input *ngIf="config.filtering" placeholder="Ingrese los datos del producto"
-                     [ngTableFiltering]="config.filtering"
-                     class="form-control"
-                     (tableChanged)="onChangeTable(config)"/>
-              </div>
-              
-            </div>
-
-            <div class="col-sm-5">
-              <label class="col-lg-4 control-label"><h4><b><span style="color:#fff;">Cliente:</span></b></h4></label>
+            <div class="col-sm-8">
+              <label class="col-lg-3 control-label"><h4><b><span style="color:#fff;">Cliente:</span></b></h4></label>
               <div class="input-group search-bar" style="width: 40%; margin-left: 20px;">
                 <input type="text" class="form-control" placeholder="Ingrese el cliente" [value]="afiliado.nombre" [(ngModel)]="afiliado.nombre" disabled>
                 <span class="input-group-btn">
@@ -47,8 +37,8 @@
               </div>
             </div>
 
-            <div class="col-sm-2">
-              <label class="col-lg-4 control-label"><h4><b><span style="color:#fff;">Saldo:</span></b></h4></label>
+            <div class="col-sm-4">
+              <label class="col-lg-3 control-label"><h4><b><span style="color:#fff;">Saldo:</span></b></h4></label>
               <div class="col-lg-5">
                 <h4><b><span style="color:#fff;">${{ afiliado.saldo | number : '1.2-2' }}</span></b></h4>
               </div>
@@ -60,10 +50,18 @@
       
       <div class="row">
         <div class="col-sm-6">
-          <h3><span style="color:#fff;"><b>Listado de productos</b></span></h3>
-          <i class="fa fa-spinner fa-pulse fa-5x fa-fw icon-loading" *ngIf="rows.length == 0"></i>
+
+          <label class="col-lg-5 control-label"><h3><span style="color:#fff;"><b>Listado de productos</b></span></h3></label><br>
+          <div class="input-group search-bar" style="width: 50%; margin-left: 20px;">
+            <input *ngIf="config.filtering" placeholder="Ingrese los datos del producto"
+                    [ngTableFiltering]="config.filtering"
+                    class="form-control" [(ngModel)]="datosProductos"
+                    (tableChanged)="onChangeTable(config)"/>
+          </div>
+
+          <i class="fa fa-spinner fa-pulse fa-5x fa-fw icon-loading" *ngIf="datosCargados"></i>
           
-          <table class="table table-hovered" *ngIf="rows.length != 0">
+          <br><table class="table table-hovered" *ngIf="!datosCargados">
             <thead>
               <tr>
                 <th *ngFor="let column of columns" (click)="sortByColumn(column)">{{column.titulo}}</th>
@@ -71,7 +69,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of rows | paginate: { itemsPerPage: 5, currentPage: p, id: 'listaProductos' }">
+              <tr *ngFor="let row of rows | paginate: { itemsPerPage: 4, currentPage: p, id: 'listaProductos' }">
                 <td *ngFor="let column of columns">
                   {{ getData(row, column) }}
                 </td>
@@ -79,11 +77,13 @@
                   <button md-mini-fab class="mat-fab" (click)="agregarProductoDetalle(row.keyCat, row.categoria, row.keyPro, row.producto, row.precio)"><i class="fa fa-plus" aria-hidden="true"></i></button>
                 </td>
               </tr>
+              <tr *ngIf="rows.length == 0">
+                <td colspan="4" style="text-align: center;"><b>No se encuentran resultados con:</b> "{{ datosProductos }}"</td>
+              </tr>
             </tbody>
           </table>
           <!-- Pagination -->
-          <pagination-controls *ngIf="rows.length != 0" (pageChange)="p = $event" id="listaProductos"></pagination-controls>
-          
+          <pagination-controls *ngIf="!datosCargados" (pageChange)="p = $event" id="listaProductos"></pagination-controls>
           
         </div>
 
@@ -91,10 +91,12 @@
           <div *ngIf="afiliado.nombre == '' || afiliado.saldo == 0">
             <h3><span style="color:#fff;"><b>Detalle de compra</b></span></h3>
           </div>
+
           <div *ngIf="afiliado.nombre !== '' && afiliado.saldo !== 0">
             <h3><span style="color:#fff;"><b>Detalle de compra del cliente: {{ afiliado.nombre }}</b></span></h3>
           </div>
-          <table class="table table-hovered">
+
+          <br><table class="table table-hovered">
             <thead>
               <tr>
                 <th>Categoría</th>
@@ -117,7 +119,13 @@
                   <button class="btn btn-xs btn-danger" (click)="abrirModalEliminarDetalle(producDet.keyPro, producDet.producto, producDet.precio, producDet.cantidad)"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
                 </td>
               </tr>
-              <tr><td class="colot-tr-table">Total de la compra:</td><td class="colot-tr-table"></td><td class="colot-tr-table"></td><td class="colot-tr-table"></td><td class="colot-tr-table">${{ compra.total | number : '1.2-2' }}</td><td class="colot-tr-table"></td></tr>
+              <tr>
+                <td colspan="6" style="text-align: center;" *ngIf="listaProductosDetalle.length == 0">No se ha agregado ningún producto al detalle de compra.</td>
+              </tr>
+              <tr>
+                <td colspan="6" class="colot-tr-table" *ngIf="listaProductosDetalle.length == 0">Total de la compra: $0.00</td>
+                <td colspan="6" class="colot-tr-table" *ngIf="listaProductosDetalle.length !== 0">Total de la compra: ${{ compra.total | number : '1.2-2' }}</td>
+              </tr>
             </tbody>
           </table>
           <!-- Pagination -->
@@ -236,6 +244,47 @@
 
   <modal-footer style="text-align: center;">
     <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Cerrar</button>
+  </modal-footer>
+</modal>
+
+<modal #modalConfirmarCompra>
+  <modal-header>
+    <h4 class="modal-title">Mensaje</h4>        
+  </modal-header>
+
+  <modal-body>
+    <div class="form-group">
+      <h5>¿Desea realizar esta compra?</h5>
+    </div>    
+  </modal-body>
+
+  <modal-footer style="text-align: center;">
+    <button type="button" class="btn btn-primary col-lg-5" data-dismiss="modal" (click)="realizarCompra()"><i class="fa fa-check" aria-hidden="true"></i> Confirmar</button>
+    <button type="button" class="btn btn-danger col-lg-5" style="margin-left: 0px" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Cancelar</button>
+  </modal-footer>
+</modal>
+
+<modal #modalCancelarCompra>
+  <modal-header>
+    <h4 class="modal-title">Mensaje</h4>        
+  </modal-header>
+
+  <modal-body>
+    <div class="form-group">
+      <div class="row">
+        <div class="col-sm-1">
+          <i class="fa fa-info-circle fa-3x icon-error" style="color: #f39c12;" aria-hidden="true"></i>
+        </div>
+        <div class="col-sm-11">
+          <h5>¿Desea cancelar la compra y regresar al menu de proveedor?.</h5>
+        </div>
+      </div>
+    </div>    
+  </modal-body>
+
+  <modal-footer style="text-align: center;">
+    <button type="button" class="btn btn-primary col-lg-5" data-dismiss="modal" [routerLink]="['/menu-proveedor']"><i class="fa fa-check" aria-hidden="true"></i> Confirmar</button>
+    <button type="button" class="btn btn-danger col-lg-5" style="margin-left: 0px" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i> Cancelar</button>
   </modal-footer>
 </modal>
 
